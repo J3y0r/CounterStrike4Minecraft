@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "cs4m",
+  "version": "${version}",
+  "name": "CS4M",
+  "description": "YGuard",
+  "authors": [],
+  "contact": {},
+  "license": "unlicense",
+  "icon": "assets/cs4m/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "me.jeyor.cs4m.Cs4m"
+    ]
+  },
+  "mixins": [
+    "cs4m.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
