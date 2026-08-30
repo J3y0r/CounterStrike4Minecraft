@@ -192,6 +192,7 @@ public final class Cs4mServer implements AutoCloseable {
 
     public void reloadConfig() throws IOException {
         config.reload();
+        match.weapons().reload(config.weapons());
         worldRules.apply(server, maps.selected());
     }
 

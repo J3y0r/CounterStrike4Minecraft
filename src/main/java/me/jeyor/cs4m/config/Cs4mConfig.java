@@ -167,6 +167,20 @@ public final class Cs4mConfig {
         return booleanValue("allowJoinRunningGame", false);
     }
 
+    public Map<String, Object> weapons() {
+        Object value = values.get("weapons");
+        if (!(value instanceof Map<?, ?> map)) {
+            return new LinkedHashMap<>();
+        }
+        Map<String, Object> weapons = new LinkedHashMap<>();
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            if (entry.getKey() != null) {
+                weapons.put(String.valueOf(entry.getKey()), entry.getValue());
+            }
+        }
+        return weapons;
+    }
+
     private boolean booleanValue(String key, boolean fallback) {
         Object value = values.get(key);
         return value instanceof Boolean booleanValue ? booleanValue : fallback;

@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.minecraft.server.level.ServerPlayer;
@@ -46,6 +47,16 @@ public final class PlayerLifecycle {
                 if (server.match().onAttackBlock(serverPlayer, pos, level.getBlockState(pos).getBlock())) {
                     return InteractionResult.FAIL;
                 }
+            }
+            return InteractionResult.PASS;
+        });
+        AttackEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> {
+            if (hand != InteractionHand.MAIN_HAND || level.isClientSide() || !(player instanceof ServerPlayer serverPlayer)) {
+                return InteractionResult.PASS;
+            }
+            Cs4mServer server = runtime.get();
+            if (server != null && server.match().onAttackEntity(serverPlayer)) {
+                return InteractionResult.FAIL;
             }
             return InteractionResult.PASS;
         });

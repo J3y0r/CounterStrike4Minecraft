@@ -8,8 +8,11 @@
     "FoodDataMixin",
     "InventoryMixin",
     "ItemEntityMixin",
+    "ItemMixin",
     "ItemStackMixin",
     "LivingEntityMixin",
+    "PlayerMixin",
+    "ServerGamePacketListenerImplMixin",
     "ServerPlayerGameModeMixin",
     "ServerPlayerMixin",
     "TntBlockMixin"

@@ -17,6 +17,9 @@ import me.jeyor.cs4m.world.MapVote;
 import me.jeyor.cs4m.world.SelectedMap;
 import me.jeyor.cs4m.shop.ShopCatalog;
 import me.jeyor.cs4m.shop.ShopMenu;
+import me.jeyor.cs4m.weapon.WeaponCatalog;
+import me.jeyor.cs4m.weapon.WeaponController;
+import me.jeyor.cs4m.weapon.WeaponItems;
 import me.jeyor.cs4m.world.SerializedLocation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -60,6 +63,7 @@ public final class MatchController {
     private final MatchScoreboard scoreboard;
     private final MapVote votes;
     private final BombController bomb;
+    private final WeaponController weapons;
     private final Logger logger;
     private GameState state = GameState.LOBBY;
     private CsTeam pendingWinner;
@@ -85,6 +89,7 @@ public final class MatchController {
         this.waiting = new WaitingCounter(config, roster, presentation);
         this.scoreboard = new MatchScoreboard(server, config, roster);
         this.bomb = new BombController(config, roster, presentation);
+        this.weapons = new WeaponController(config, new WeaponCatalog(config.weapons(), logger), roster, presentation);
         this.logger = logger;
     }
 
@@ -94,6 +99,10 @@ public final class MatchController {
 
     public MatchRoster roster() {
         return roster;
+    }
+
+    public WeaponController weapons() {
+        return weapons;
     }
 
     public int remainingRoundSeconds() {
@@ -130,6 +139,7 @@ public final class MatchController {
             constrainShopMovement();
             refreshShopItems();
         }
+        weapons.tick(state);
         hudTicks++;
         if (hudTicks % 20 == 0 && !roster.players().isEmpty() && state != GameState.LOBBY) {
             scoreboard.update(maps.selected().map(SelectedMap::name).orElse(""));
@@ -150,6 +160,7 @@ public final class MatchController {
         }
         if (existing.isPresent()) {
             existing.get().setPlayer(player);
+            weapons.clear(player.getUUID());
             returnToGame(existing.get());
             return;
         }
@@ -162,6 +173,7 @@ public final class MatchController {
         }
         roster.find(player).ifPresent(csPlayer -> {
             scoreboard.remove(player);
+            weapons.clear(player.getUUID());
             leaveGame(csPlayer);
         });
     }
@@ -239,10 +251,10 @@ public final class MatchController {
                 presentation.sendChat(player, Component.literal("Sorry, not in ShopPhase.").withStyle(ChatFormatting.RED));
                 return true;
             }
-            ShopCatalog.open(player, existing.get(), compact());
+            ShopCatalog.open(player, existing.get(), weapons.catalog(), compact());
             return true;
         }
-        return false;
+        return weapons.onUseWeapon(player, state);
     }
 
     public boolean onUseBlock(ServerPlayer player, BlockPos pos, Block block) {
@@ -259,6 +271,9 @@ public final class MatchController {
         ItemStack held = player.getMainHandItem();
         if (MatchItems.is(held, MatchItems.SHOP)) {
             return onUseItem(player, InteractionHand.MAIN_HAND);
+        }
+        if (weapons.onUseWeapon(player, state)) {
+            return true;
         }
         if (bomb.planted() && existing.get().team() == TeamEnum.COUNTER_TERRORISTS) {
             bomb.tryDefuse(player, existing.get());
@@ -289,11 +304,21 @@ public final class MatchController {
         return true;
     }
 
+    public boolean onAttackEntity(ServerPlayer player) {
+        if (!worldRules.isCsWorld(player.level())) {
+            return false;
+        }
+        return weapons.onReload(player, state);
+    }
+
     public boolean onAttackBlock(ServerPlayer player, BlockPos pos, Block block) {
         if (!worldRules.isCsWorld(player.level())) {
             return false;
         }
         if (handleMapVote(player, pos)) {
+            return true;
+        }
+        if (weapons.onReload(player, state)) {
             return true;
         }
         Optional<CsPlayer> existing = roster.find(player);
@@ -556,7 +581,7 @@ public final class MatchController {
         }
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             ItemStack stack = inventory.getItem(slot);
-            if (MatchItems.bomb(stack)) {
+            if (MatchItems.bomb(stack) || WeaponItems.isWeapon(stack)) {
                 player.drop(stack.copy(), true, false);
             }
             inventory.setItem(slot, ItemStack.EMPTY);
@@ -665,6 +690,8 @@ public final class MatchController {
         int remaining = timers.consumeShopSecond();
         if (remaining <= 0) {
             presentation.sendActionBarToMatch(roster, PlayerPresentation.colored("The shop phase has ended!", ChatFormatting.GOLD));
+            clearShopItems();
+            giveDefaultPistols();
             timers.startRun(config.matchDuration());
             state = GameState.RUN;
             return;
@@ -788,6 +815,35 @@ public final class MatchController {
         player.containerMenu.broadcastChanges();
     }
 
+    private void clearShopItems() {
+        for (CsPlayer csPlayer : roster.players()) {
+            if (csPlayer.online()) {
+                csPlayer.player().getInventory().setItem(InventorySlots.SHOP, ItemStack.EMPTY);
+                csPlayer.player().containerMenu.broadcastChanges();
+            }
+        }
+    }
+
+    private void giveDefaultPistols() {
+        for (CsPlayer csPlayer : roster.players()) {
+            giveDefaultPistol(csPlayer);
+        }
+    }
+
+    private void giveDefaultPistol(CsPlayer csPlayer) {
+        if (!csPlayer.online()) {
+            return;
+        }
+        ServerPlayer player = csPlayer.player();
+        ItemStack current = player.getInventory().getItem(InventorySlots.PISTOL);
+        if (!current.isEmpty()) {
+            return;
+        }
+        weapons.catalog().defaultPistol(csPlayer.team()).ifPresent(definition ->
+                player.getInventory().setItem(InventorySlots.PISTOL, WeaponItems.create(definition)));
+        player.containerMenu.broadcastChanges();
+    }
+
     private void giveLeggings(CsPlayer csPlayer) {
         if (!csPlayer.online()) {
             return;
@@ -899,6 +955,7 @@ public final class MatchController {
             }
         }
         roster.clear();
+        weapons.clearAll();
         pendingWinner = null;
         pendingLoser = null;
         logger.info("CS4M match finished");
@@ -1128,20 +1185,11 @@ public final class MatchController {
         return config.modeValorant() || config.modeRealms();
     }
 
-    private static int pickupSlot(ItemStack item) {
+    private int pickupSlot(ItemStack item) {
         if (MatchItems.is(item, MatchItems.KNIFE) || item.is(Items.IRON_AXE)) {
             return InventorySlots.KNIFE;
         }
-        if (item.is(Items.MACE) || item.is(Items.TRIDENT)) {
-            return InventorySlots.RIFLE;
-        }
-        if (item.is(Items.IRON_SWORD) || item.is(Items.DIAMOND_SWORD) || item.is(Items.NETHERITE_SWORD)) {
-            return InventorySlots.PISTOL;
-        }
-        if (item.is(Items.BOW) || item.is(Items.CROSSBOW)) {
-            return InventorySlots.UTILITY;
-        }
-        return -1;
+        return weapons.catalog().of(item).map(definition -> definition.slot()).orElse(-1);
     }
 
     private static boolean behind(ServerPlayer attacker, ServerPlayer victim) {

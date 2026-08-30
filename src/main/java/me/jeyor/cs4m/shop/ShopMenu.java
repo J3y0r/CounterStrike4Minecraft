@@ -1,6 +1,7 @@
 package me.jeyor.cs4m.shop;
 
 import me.jeyor.cs4m.player.CsPlayer;
+import me.jeyor.cs4m.weapon.WeaponCatalog;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -12,11 +13,13 @@ import net.minecraft.server.level.ServerPlayer;
 
 public final class ShopMenu extends ChestMenu {
     private final CsPlayer buyer;
+    private final WeaponCatalog weapons;
     private final boolean compact;
 
-    public ShopMenu(int containerId, Inventory inventory, Container container, CsPlayer buyer, boolean compact) {
-        super(MenuType.GENERIC_9x1, containerId, inventory, container, 1);
+    public ShopMenu(int containerId, Inventory inventory, Container container, CsPlayer buyer, WeaponCatalog weapons, boolean compact) {
+        super(MenuType.GENERIC_9x2, containerId, inventory, container, 2);
         this.buyer = buyer;
+        this.weapons = weapons;
         this.compact = compact;
     }
 
@@ -28,7 +31,7 @@ public final class ShopMenu extends ChestMenu {
         ItemStack clicked = slotId >= 0 && slotId < getContainer().getContainerSize()
                 ? getContainer().getItem(slotId)
                 : ItemStack.EMPTY;
-        ShopCatalog.purchase(serverPlayer, buyer, clicked, compact);
+        ShopCatalog.purchase(serverPlayer, buyer, clicked, weapons, compact);
         broadcastChanges();
     }
 

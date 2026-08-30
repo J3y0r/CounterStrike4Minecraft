@@ -29,7 +29,7 @@ weapons:
   ak47:
     name: ak47
     display-name: '&e&lAK-47 Rifle'
-    material: INK_SAC
+    material: IRON_HOE
     damage: 7
     cost: 2700
     magazine-capacity: 30
@@ -40,7 +40,7 @@ weapons:
   vz58:
     name: vz58
     display-name: '&e&lGalil-AR Rifle'
-    material: WHEAT
+    material: COPPER_HOE
     damage: 5
     cost: 2000
     magazine-capacity: 35
@@ -51,7 +51,7 @@ weapons:
   t-pistol-default:
     name: glock
     display-name: '&e&lGlock-18 Pistol'
-    material: GOLD_NUGGET
+    material: WOODEN_PICKAXE
     damage: 6
     cost: 400
     magazine-capacity: 20
@@ -62,7 +62,7 @@ weapons:
   m4a1s:
     name: m4a1s
     display-name: '&e&lM4A1s Rifle'
-    material: GLOWSTONE_DUST
+    material: DIAMOND_HOE
     damage: 6
     cost: 3100
     magazine-capacity: 25
@@ -73,7 +73,7 @@ weapons:
   famas:
     name: famas
     display-name: '&e&lFamas Rifle'
-    material: GUNPOWDER
+    material: GOLDEN_HOE
     damage: 5
     cost: 2250
     magazine-capacity: 25
@@ -84,7 +84,7 @@ weapons:
   ct-pistol-default:
     name: p30silenced
     display-name: '&e&lUSP-S Pistol'
-    material: GHAST_TEAR
+    material: IRON_PICKAXE
     damage: 7
     cost: 400
     magazine-capacity: 12
@@ -95,7 +95,7 @@ weapons:
   deagle:
     name: deagle
     display-name: '&e&lDeagle Pistol'
-    material: GOLDEN_CARROT
+    material: GOLDEN_PICKAXE
     damage: 12.6
     cost: 700
     magazine-capacity: 7
@@ -106,7 +106,7 @@ weapons:
   p30:
     name: p30
     display-name: '&e&lFive-SeveN'
-    material: MAGMA_CREAM
+    material: COPPER_PICKAXE
     damage: 6.4
     cost: 700
     magazine-capacity: 20
@@ -117,7 +117,7 @@ weapons:
   t-mp5k:
     name: mp5k
     display-name: '&e&lMP5'
-    material: FERMENTED_SPIDER_EYE
+    material: STONE_HOE
     damage: 5.4
     cost: 1500
     magazine-capacity: 30
@@ -128,7 +128,7 @@ weapons:
   ct-mp5k:
     name: mp5k
     display-name: '&e&lMP5'
-    material: BLAZE_POWDER
+    material: STONE_HOE
     damage: 5.4
     cost: 1500
     magazine-capacity: 30
@@ -139,7 +139,7 @@ weapons:
   sg553:
     name: sg553
     display-name: '&e&lSG 553'
-    material: PHANTOM_MEMBRANE
+    material: NETHERITE_HOE
     damage: 6
     cost: 3000
     magazine-capacity: 30
@@ -150,7 +150,7 @@ weapons:
   t-awp:
     name: awp
     display-name: '&e&lAWP'
-    material: SUGAR_CANE
+    material: NETHERITE_PICKAXE
     damage: 23
     cost: 4750
     magazine-capacity: 10
@@ -161,7 +161,7 @@ weapons:
   ct-awp:
     name: awp
     display-name: '&e&lAWP'
-    material: SUGAR_CANE
+    material: NETHERITE_PICKAXE
     damage: 23
     cost: 4750
     magazine-capacity: 10

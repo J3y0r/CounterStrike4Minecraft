@@ -61,7 +61,7 @@ public final class MatchItems {
         return is(stack, BOMB) || (!stack.isEmpty() && stack.is(Items.TNT));
     }
 
-    private static void mark(ItemStack stack, String identity) {
+    public static void mark(ItemStack stack, String identity) {
         CompoundTag tag = new CompoundTag();
         tag.putString("cs4m", identity);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));

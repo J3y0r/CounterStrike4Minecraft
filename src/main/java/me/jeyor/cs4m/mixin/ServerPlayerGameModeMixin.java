@@ -22,7 +22,7 @@ public class ServerPlayerGameModeMixin {
     private void cs4mUseItem(ServerPlayer player, Level level, ItemStack stack, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         Cs4mServer runtime = Cs4mAccess.runtime();
         if (runtime != null && runtime.match().onUseItem(player, hand)) {
-            cir.setReturnValue(InteractionResult.SUCCESS);
+            cir.setReturnValue(InteractionResult.CONSUME);
         }
     }
 
@@ -41,7 +41,7 @@ public class ServerPlayerGameModeMixin {
         }
         BlockPos pos = hit.getBlockPos();
         if (runtime.match().onUseBlock(player, pos, level.getBlockState(pos).getBlock())) {
-            cir.setReturnValue(InteractionResult.SUCCESS);
+            cir.setReturnValue(InteractionResult.CONSUME);
             return;
         }
         if (stack.getItem() instanceof BlockItem blockItem) {
