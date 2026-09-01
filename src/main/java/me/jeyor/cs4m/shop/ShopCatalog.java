@@ -70,6 +70,7 @@ public final class ShopCatalog {
                 player.sendSystemMessage(Component.literal("Fixing current armour.").withStyle(ChatFormatting.RED));
             }
             player.setItemSlot(EquipmentSlot.CHEST, given);
+            csPlayer.setArmor(100);
         }
         csPlayer.setMoney(csPlayer.money() - price, compact);
         player.sendSystemMessage(Component.literal("You have purchased " + given.getHoverName().getString()).withStyle(ChatFormatting.GREEN));
@@ -84,8 +85,11 @@ public final class ShopCatalog {
         }
         ItemStack current = player.getInventory().getItem(definition.slot());
         if (!current.isEmpty()) {
-            player.sendSystemMessage(Component.literal("Sorry, you cannot have two items of this type.").withStyle(ChatFormatting.RED));
-            return true;
+            if (WeaponItems.id(current).filter(id -> id.equals(definition.id())).isPresent()) {
+                player.sendSystemMessage(Component.literal("Sorry, you cannot have two items of this type.").withStyle(ChatFormatting.RED));
+                return true;
+            }
+            player.drop(current.copy(), false, false);
         }
         ItemStack given = WeaponItems.create(definition);
         player.getInventory().setItem(definition.slot(), given);

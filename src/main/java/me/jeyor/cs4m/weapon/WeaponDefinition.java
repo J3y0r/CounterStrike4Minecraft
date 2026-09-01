@@ -3,6 +3,7 @@ package me.jeyor.cs4m.weapon;
 import me.jeyor.cs4m.player.TeamEnum;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
+import org.jspecify.annotations.Nullable;
 
 public record WeaponDefinition(
         String id,
@@ -15,11 +16,12 @@ public record WeaponDefinition(
         int magazines,
         float reloadSeconds,
         WeaponType type,
-        TeamEnum team,
+        @Nullable TeamEnum team,
         boolean semiAutomatic,
         int fireIntervalTicks,
         double range,
-        float baseSpread
+        float baseSpread,
+        float armorPenetration
 ) {
     public int slot() {
         return type.slot();
@@ -31,5 +33,13 @@ public record WeaponDefinition(
 
     public int durabilityMax() {
         return magazineCapacity + 1;
+    }
+
+    public boolean defaultPistol() {
+        return "t-pistol-default".equals(id) || "ct-pistol-default".equals(id);
+    }
+
+    public boolean availableTo(TeamEnum team) {
+        return this.team == null || this.team == team;
     }
 }

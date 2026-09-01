@@ -18,6 +18,7 @@ public final class CsPlayer {
     private String colour;
     private String opponentColour;
     private UUID lastKiller;
+    private int armor;
 
     public CsPlayer(ServerPlayer player, int startingMoney) {
         this.uuid = player.getUUID();
@@ -137,11 +138,20 @@ public final class CsPlayer {
         this.lastKiller = lastKiller;
     }
 
+    public int armor() {
+        return armor;
+    }
+
+    public void setArmor(int armor) {
+        this.armor = Math.max(0, Math.min(100, armor));
+    }
+
     public void resetMatchStats() {
         money = 0;
         kills = 0;
         deaths = 0;
         team = null;
         lastKiller = null;
+        armor = 0;
     }
 }

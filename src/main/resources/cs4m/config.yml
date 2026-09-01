@@ -35,6 +35,7 @@ weapons:
     magazine-capacity: 30
     magazines: 3
     reload-speed: 2.5
+    armor-penetration: 0.775
     weapon-type: RIFLE
     team: TERRORISTS
   vz58:
@@ -46,6 +47,7 @@ weapons:
     magazine-capacity: 35
     magazines: 3
     reload-speed: 3.0
+    armor-penetration: 0.70
     weapon-type: RIFLE
     team: TERRORISTS
   t-pistol-default:
@@ -53,10 +55,11 @@ weapons:
     display-name: '&e&lGlock-18 Pistol'
     material: WOODEN_PICKAXE
     damage: 6
-    cost: 400
+    cost: 0
     magazine-capacity: 20
     magazines: 3
     reload-speed: 2.2
+    armor-penetration: 0.47
     weapon-type: PISTOL
     team: TERRORISTS
   m4a1s:
@@ -68,6 +71,7 @@ weapons:
     magazine-capacity: 25
     magazines: 3
     reload-speed: 3.1
+    armor-penetration: 0.70
     weapon-type: RIFLE
     team: COUNTER_TERRORISTS
   famas:
@@ -79,6 +83,7 @@ weapons:
     magazine-capacity: 25
     magazines: 3
     reload-speed: 3.3
+    armor-penetration: 0.70
     weapon-type: RIFLE
     team: COUNTER_TERRORISTS
   ct-pistol-default:
@@ -86,10 +91,11 @@ weapons:
     display-name: '&e&lUSP-S Pistol'
     material: IRON_PICKAXE
     damage: 7
-    cost: 400
+    cost: 0
     magazine-capacity: 12
     magazines: 3
     reload-speed: 2.2
+    armor-penetration: 0.50
     weapon-type: PISTOL
     team: COUNTER_TERRORISTS
   deagle:
@@ -101,8 +107,21 @@ weapons:
     magazine-capacity: 7
     magazines: 5
     reload-speed: 2.2
+    armor-penetration: 0.93
     weapon-type: PISTOL
-    team: COUNTER_TERRORISTS
+    team: ALL
+  tec9:
+    name: tec9
+    display-name: '&e&lTec-9'
+    material: STONE_PICKAXE
+    damage: 6.4
+    cost: 500
+    magazine-capacity: 18
+    magazines: 4
+    reload-speed: 2.2
+    armor-penetration: 0.64
+    weapon-type: PISTOL
+    team: TERRORISTS
   p30:
     name: p30
     display-name: '&e&lFive-SeveN'
@@ -112,6 +131,7 @@ weapons:
     magazine-capacity: 20
     magazines: 5
     reload-speed: 2.2
+    armor-penetration: 0.64
     weapon-type: PISTOL
     team: COUNTER_TERRORISTS
   t-mp5k:
@@ -123,6 +143,7 @@ weapons:
     magazine-capacity: 30
     magazines: 4
     reload-speed: 2.97
+    armor-penetration: 0.65
     weapon-type: RIFLE
     team: TERRORISTS
   ct-mp5k:
@@ -134,6 +155,7 @@ weapons:
     magazine-capacity: 30
     magazines: 4
     reload-speed: 2.97
+    armor-penetration: 0.65
     weapon-type: RIFLE
     team: COUNTER_TERRORISTS
   sg553:
@@ -145,6 +167,7 @@ weapons:
     magazine-capacity: 30
     magazines: 3
     reload-speed: 2.77
+    armor-penetration: 0.75
     weapon-type: RIFLE
     team: TERRORISTS
   t-awp:
@@ -156,6 +179,7 @@ weapons:
     magazine-capacity: 10
     magazines: 3
     reload-speed: 3.7
+    armor-penetration: 0.975
     weapon-type: RIFLE
     team: TERRORISTS
   ct-awp:
@@ -167,6 +191,7 @@ weapons:
     magazine-capacity: 10
     magazines: 3
     reload-speed: 3.7
+    armor-penetration: 0.975
     weapon-type: RIFLE
     team: COUNTER_TERRORISTS
   t-grenade:

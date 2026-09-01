@@ -576,9 +576,11 @@ public final class MatchController {
     }
 
     public boolean filterDeathDrops(ServerPlayer player, Inventory inventory) {
-        if (!worldRules.restrictionsEnabled(player.level()) || roster.find(player).isEmpty()) {
+        Optional<CsPlayer> existing = roster.find(player);
+        if (!worldRules.restrictionsEnabled(player.level()) || existing.isEmpty()) {
             return false;
         }
+        existing.get().setArmor(0);
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             ItemStack stack = inventory.getItem(slot);
             if (MatchItems.bomb(stack) || WeaponItems.isWeapon(stack)) {
@@ -812,6 +814,7 @@ public final class MatchController {
         giveLeggings(csPlayer);
         player.getInventory().setItem(InventorySlots.KNIFE, MatchItems.knife());
         player.getInventory().setItem(InventorySlots.BOMB, ItemStack.EMPTY);
+        giveDefaultPistol(csPlayer);
         player.containerMenu.broadcastChanges();
     }
 
@@ -929,6 +932,7 @@ public final class MatchController {
             roster.swapSides();
             for (CsPlayer player : roster.players()) {
                 player.setMoney(config.startingMoney(), compact());
+                player.setArmor(0);
                 if (player.online()) {
                     presentation.clearInventory(player.player());
                     announceRole(player, true);

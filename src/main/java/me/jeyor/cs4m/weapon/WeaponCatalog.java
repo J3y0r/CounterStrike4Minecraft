@@ -6,6 +6,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public final class WeaponCatalog {
     public List<WeaponDefinition> shopEntries(TeamEnum team) {
         List<WeaponDefinition> entries = new ArrayList<>();
         for (WeaponDefinition definition : byId.values()) {
-            if (definition.type() == WeaponType.GRENADE || definition.team() != team) {
+            if (definition.type() == WeaponType.GRENADE || definition.defaultPistol() || !definition.availableTo(team)) {
                 continue;
             }
             entries.add(definition);
@@ -54,7 +55,7 @@ public final class WeaponCatalog {
             return named;
         }
         for (WeaponDefinition definition : byId.values()) {
-            if (definition.type() == WeaponType.PISTOL && definition.team() == team) {
+            if (definition.type() == WeaponType.PISTOL && definition.availableTo(team)) {
                 return Optional.of(definition);
             }
         }
@@ -97,8 +98,11 @@ public final class WeaponCatalog {
             return null;
         }
         String display = string(values, "display-name", id);
-        boolean sniper = id.toLowerCase(Locale.ROOT).contains("awp");
+        String key = id.toLowerCase(Locale.ROOT);
+        boolean sniper = key.contains("awp");
         boolean pistol = type == WeaponType.PISTOL;
+        boolean smg = key.contains("mp5");
+        float armorPenetration = (float) number(values, "armor-penetration", sniper ? 0.97 : smg ? 0.65 : pistol ? 0.50 : 0.75);
         return new WeaponDefinition(
                 id,
                 string(values, "name", id),
@@ -114,7 +118,8 @@ public final class WeaponCatalog {
                 pistol || sniper,
                 sniper ? 30 : pistol ? 6 : 2,
                 sniper ? 128.0 : pistol ? 64.0 : 96.0,
-                sniper ? 0.15F : pistol ? 1.2F : 0.8F
+                sniper ? 0.15F : pistol ? 1.2F : 0.8F,
+                Math.max(0.0F, Math.min(1.0F, armorPenetration))
         );
     }
 
@@ -137,6 +142,9 @@ public final class WeaponCatalog {
         if (type == WeaponType.PISTOL) {
             if (key.contains("deagle")) {
                 return Items.GOLDEN_PICKAXE;
+            }
+            if (key.contains("tec")) {
+                return Items.STONE_PICKAXE;
             }
             if (key.contains("p30") || key.contains("five")) {
                 return Items.COPPER_PICKAXE;
@@ -170,8 +178,15 @@ public final class WeaponCatalog {
         return type == WeaponType.PISTOL ? Items.WOODEN_PICKAXE : Items.IRON_HOE;
     }
 
-    private static TeamEnum team(String raw) {
-        if (raw != null && raw.toUpperCase(Locale.ROOT).contains("COUNTER")) {
+    private static @Nullable TeamEnum team(String raw) {
+        if (raw == null) {
+            return TeamEnum.TERRORISTS;
+        }
+        String value = raw.toUpperCase(Locale.ROOT);
+        if (value.equals("ALL") || value.equals("BOTH") || value.equals("ANY")) {
+            return null;
+        }
+        if (value.contains("COUNTER")) {
             return TeamEnum.COUNTER_TERRORISTS;
         }
         return TeamEnum.TERRORISTS;

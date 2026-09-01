@@ -142,9 +142,16 @@ public final class WeaponController {
         Hitscan.trail(level, player.getEyePosition(), end);
         if (hit instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof LivingEntity living) {
             Hitscan.impact(level, end, living);
+            boolean headshot = Hitscan.headshot(living, end);
             float damage = weapon.damage();
-            if (Hitscan.headshot(living, end)) {
+            if (headshot) {
                 damage *= 2.0F;
+            }
+            if (living instanceof ServerPlayer victim) {
+                Optional<CsPlayer> target = roster.find(victim);
+                if (target.isPresent()) {
+                    damage = CsArmor.apply(victim, target.get(), weapon, damage, headshot);
+                }
             }
             living.invulnerableTime = 0;
             living.hurtServer(level, player.damageSources().playerAttack(player), damage);
